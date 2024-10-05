@@ -12,7 +12,6 @@ import useForm from '../../components/Form/useForm';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import uuid from 'react-native-uuid';
 import DropDownPicker from 'react-native-dropdown-picker';
-import Wizard from '../../components/Form/Wizard';
 
 
 export default function Paso1({ navigation, route }) {
@@ -122,8 +121,6 @@ export default function Paso1({ navigation, route }) {
     guardado: false,
     local: false,
     version: '',
-    id_solicitante: '',
-    id_empresa: '',
     fotos_general : [],
     vidrios: {"costo_previsto": "0", 
     "id_estado": 0, 
@@ -188,9 +185,6 @@ export default function Paso1({ navigation, route }) {
           setParsedSession(parsedSessionObj);
           const nombre = parsedSessionObj.nombre;
           const id_valuador = parsedSessionObj.id;
-          const id_empresa = parsedSessionObj.id_empresa;
-
-          console.log(parsedSessionObj);
           
           const data_form = parsedSessionObj.datos_formulario;
 
@@ -264,10 +258,7 @@ export default function Paso1({ navigation, route }) {
               id: uuid.v4(),
               id_vendedor: id_valuador,
               valuador: nombre,
-              id_solicitante: id_valuador,
-              id_empresa: id_empresa,
             });
-
           }
         }
       } catch (error) {
@@ -398,64 +389,6 @@ export default function Paso1({ navigation, route }) {
     setModalVisible(false);
   };
 
-  const data = [
-    { label: 'ANDROID Y APPLE CARPLAY', value: values.android_apple, key: 'android_apple' },
-    { label: 'AIRBAG FRONTALES', value: values.airbags, key: 'airbags' },
-    { label: 'AIRBAG FRONTALES/LATERALES', value: values.airbags_laterales, key: 'airbags_laterales' },
-    { label: 'AIRBAG FRONTALES/LATERALES/CORTINAS', value: values.airbags_cortina, key: 'airbags_cortina' },
-    { label: 'AIRE ACONDICIONADO', value: values.aire_automatico, key: 'aire_automatico' },
-    { label: 'AIRE ACONDICIONADO AUTOMÁICO', value: values.aire, key: 'aire' },
-    { label: 'ALARMA', value: values.alarma, key: 'alarma' },
-    { label: 'ASIENTO ELÉCTRICO', value: values.asiento_electrico, key: 'asiento_electrico' },
-    { label: 'ASIENTOS CALEFACCIÓN', value: values.asiento_aquecidos, key: 'asiento_aquecidos' },
-    { label: 'BLUETOOTH', value: values.bluetooth, key: 'bluetooth' },
-    { label: 'BOLA DE REMOLQUE', value: values.bola_remolque, key: 'bola_remolque' },
-    { label: 'CAJA AUTOMÁTICA', value: values.caja_automatica, key: 'caja_automatica' },
-    { label: 'CAMBIOS AL VOLANTE', value: values.cambios_volante, key: 'cambios_volante' },
-    { label: 'COMPUTADORA DE VIAJE', value: values.compu_viaje, key: 'compu_viaje' },
-    { label: 'CRISTALES ELÉCTRICOS', value: values.cristales, key: 'cristales' },
-    { label: 'CRUISE CONTROL', value: values.cruise, key: 'cruise' },
-    { label: 'DIRECCIÓN ASISTIDA', value: values.direccion_asistida, key: 'direccion_asistida' },
-    { label: 'DOBLE QUEMACOCOS', value: values.quemacocos, key: 'quemacocos' },
-    { label: 'ENTRADA AUXILIAR', value: values.auxiliar, key: 'auxiliar' },
-    { label: 'ENTRADA USB', value: values.usb, key: 'usb' },
-    { label: 'ESPEJOS ELÉCTRICOS', value: values.espejos_electricos, key: 'espejos_electricos' },
-    { label: 'FAROS DE NIEBLA', value: values.f_niebla, key: 'f_niebla' },
-    { label: 'FAROS XENON', value: values.f_xenon, key: 'f_xenon' },
-    { label: 'FAROS XENON BI-DIRECCIONALES', value: values.f_xenon_bi, key: 'f_xenon_bi' },
-    { label: 'GPS', value: values.gps, key: 'gps' },
-    { label: 'ISOFIX', value: values.isofix, key: 'isofix' },
-    { label: 'LLANTA DE REFACCIÓN', value: values.llantas_refaccion, key: 'llantas_refaccion' },
-    { label: 'CAJUELA ELÉCTRICA', value: values.cajuela_electrica, key: 'cajuela_electrica' },
-    { label: 'QUEMACOCOS', value: values.quemacocos_abatible, key: 'quemacocos_abatible' },
-    { label: 'RADIO CON CD', value: values.radio_cd, key: 'radio_cd' },
-    { label: 'REPRODUCTOR DVD', value: values.dvd, key: 'dvd' },
-    { label: 'SENSORES DELANTEROS', value: values.sensores_atras, key: 'sensores_atras' },
-    { label: 'SENSORES TRASEROS', value: values.sensores_frente, key: 'sensores_frente' },
-    { label: 'SENSORES LLUVIA', value: values.sensores_lluvia, key: 'sensores_lluvia' },
-    { label: 'SENSORES LUCES', value: values.sensores_luces, key: 'sensores_luces' },
-    { label: 'SENSORES LLANTAS', value: values.sensores_llantas, key: 'sensores_llantas' },
-    { label: 'SUSPENCIÓN NEUMÁTICA', value: values.suspension, key: 'suspension' },
-    { label: 'TAPICERIA_TELA', value: values.tapiceria, key: 'tapiceria' },
-    { label: 'TAPICERIA_PIEL', value: values.tapiceria_piel, key: 'tapiceria_piel' },
-    { label: 'TECHO PANORAMICO', value: values.techo, key: 'techo' },
-    { label: 'VIDRIOS ELECTRICOS', value: values.vidrios_electricos_f, key: 'vidrios_electricos_f' },
-    { label: 'VOLANTE MULTIFUNCIONES', value: values.volante_multifunciones, key: 'volante_multifunciones' },
-  ];
-
-  const equipamientoTrue = data.filter(item => item.value === true);
-
-  // Función para renderizar los elementos filtrados
-  const renderEquipamiento = () => {
-    if (equipamientoTrue.length === 0) {
-      return <Text style={{ ...styles.photoText, margin:10}}>No hay equipamiento</Text>;
-    }
-
-    return equipamientoTrue.map((item, index) => (
-      <Text style={styles.equipoText} key={index}> - {item.label}</Text>
-    ));
-  };
-
   const fotos_texto = [
     "Parte delantera",
     "Vista de tres cuartos delantera",
@@ -478,36 +411,6 @@ export default function Paso1({ navigation, route }) {
     "Detalle 5",
     "Detalle 6",
   ];
-  
-  const renderCards = () => {
-    return data.map((item, index) => (
-      <Card key={index} style={styles.card_modal}>
-        <Card.Content style={styles.cardContent_modal}>
-          <Text style={styles.cardText}>{item.label}</Text>
-          <Switch 
-            value={item.value} 
-            onValueChange={(value) => handleChange(item.key, value)}
-          />
-        </Card.Content>
-      </Card>
-    ));
-  };
-
-  const handleAddPhoto = () => {
-    setShowCamera(true);
-  };
-
-  const takePicture = async () => {
-    if (cameraRef.current) {
-      const photo = await cameraRef.current.takePictureAsync({ quality: 0.5, base64: true});
-      const index = values.fotos_general.length;
-      handleChange('fotos_general', [...values.fotos_general, { uri: photo.uri, index, guardado: 0, tipo: 0 }])
-
-      if(fotos_texto.length == values.fotos_general.length+1){
-        setShowCamera(false);
-      }
-     }
-  };
 
   const years = [];
   for (let i = 2010; i <= 2024; i++) {
@@ -557,7 +460,6 @@ export default function Paso1({ navigation, route }) {
       </Appbar.Header>
       <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={styles.content}>
         <ScrollView contentContainerStyle={styles.scrollView} nestedScrollEnabled={true}>
-          <Wizard currentStep={currentStep} />
           
           <TextPaper variant="titleMedium" style={{ fontWeight: 400, marginBottom: 10 }}>
           Información del Propietario
@@ -738,42 +640,6 @@ export default function Paso1({ navigation, route }) {
               placeholder="Cantidad de puertas"
             />
           </View>
-            
-
-          <Card style={{ ...styles.card, zIndex: 4 }} onPress={handleCardPress}>
-            <Card.Title title="Equipamiento" />
-            <Card.Content style={styles.photoCardContent}>
-              {renderEquipamiento()}
-            </Card.Content>
-          </Card>
-          <Card style={styles.card_final2}>
-            <Card.Title title="Fotos" />
-            <Card.Content style={styles.photoCardContent}>
-              {values.fotos_general && values.fotos_general.length > 0 ? (
-                  <View style={styles.container_photo}>
-                    {values.fotos_general.map((imgSrc, index) => (
-                        <TouchableOpacity key={index} onPress={() => console.log("Foto presionada", imgSrc)}>
-                            <Image source={{ uri: imgSrc.uri }} style={styles.image} />
-                        </TouchableOpacity>
-                    ))}
-                  </View>
-              ) : (
-                  <Text style={styles.photoText}>No hay foto</Text>
-              )}
-            </Card.Content>
-            <View>
-                <ButtonP
-                mode="contained"
-                onPress={handleAddPhoto}
-                style={styles.fullButton}
-                icon={({ size, color }) => (
-                    <Icon name="camera" size={size} color={color} />
-                )}
-                >
-                Tomar Foto
-                </ButtonP>
-            </View>
-          </Card>
         
         </ScrollView>
       </KeyboardAvoidingView>
@@ -784,34 +650,6 @@ export default function Paso1({ navigation, route }) {
       </View>
       </>
       )}
-      {showCamera && (
-          <CamaraPrincipalComponent takePicture={takePicture} setShowCamera={setShowCamera} cameraRef={cameraRef} bottomText={fotos_texto[values.fotos_general.length]} />
-        )}
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={handleCloseModal}
-        propagateSwipe={true}
-      >
-        <View style={styles.modalContainer}>
-          <View style={[styles.titleContainer, { backgroundColor: colors.secondary}]}>
-            <Text style={styles.title}>Equipamiento</Text>
-            <Pressable onPress={handleCloseModal}>
-              <MaterialIcons name="close" color="#fff" size={22} />
-            </Pressable>
-          </View>
-          <ScrollView style={styles.scrollView_modal}>
-              {renderCards()}
-          </ScrollView>
-          <View style={[styles.buttonContainer_modal, { backgroundColor: colors.primary}]}>
-            <TouchableOpacity onPress={handleCloseModal} style={styles.button} color={theme.colors.buttonPaso}>
-              <Text style={styles.buttonText}>Guardar</Text>
-            </TouchableOpacity>
-            {/* <Button title="Guardar" onPress={handleSave} color="white"/> */}
-          </View>
-        </View>
-      </Modal>
     </View>
   );
 }

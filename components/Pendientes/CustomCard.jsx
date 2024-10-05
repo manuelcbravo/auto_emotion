@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect  } from 'react';
-import { Card, Text, Avatar, Button, useTheme } from 'react-native-paper';
+import { Card, Text, Avatar, Button, useTheme, Divider } from 'react-native-paper';
 import { StyleSheet, View, TouchableOpacity, Platform   } from 'react-native';
 import { FontAwesome5, AntDesign, MaterialCommunityIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -97,7 +97,7 @@ export default function CustomCard({ onPress, card }) {
   return (
     <TouchableOpacity  style={styles.container}>
       <Card style={styles.card} onPress={onPress} mode={ 'elevated' }>
-        <Card.Content>
+        <Card.Content style={{ paddingBottom: 0}}>
           <View style={styles.header}>
             <Text style={styles.headerText}>{ buscarEnOpciones(card.id_marca, opcionesMarca)  + ' ' + buscarEnOpciones(card.id_modelo, opcionesModelo)  } </Text>
             <Text style={[styles.date, { color: colors.text }]}>18/02/2019</Text>
@@ -105,16 +105,15 @@ export default function CustomCard({ onPress, card }) {
           <Text style={styles.cardSubTitle}>
             { card.version ?? '-' }
           </Text>
-          <View style={{ backgroundColor: colors.primary, alignSelf: 'flex-start', padding: 2, borderRadius: 5 }}>
+          <View style={{ backgroundColor: colors.primary, alignSelf: 'flex-start', padding: 1, borderRadius: 5 }}>
             <Text style={[styles.cardTitle, { color: colors.textWhite, fontSize: colors.fonSizeCard }]}>
               {card.placa ?? 'AAA000'}
             </Text>
           </View>
           <Text style={[styles.uppercaseText, { color: colors.text }]}>VENDEDOR: {card.valuador}</Text>
           <Text style={[styles.uppercaseText, { color: colors.text, fontSize: 12 }]}>CLIENTE: {card.cliente}</Text>
-          <Text style={{ color: colors.text, fontSize: 12 }}>TIENDA: DISTRIBUIDORA VOLKSWAGEN DE PACHUCA, S.A.</Text>
-          
-          <Text style={[styles.observaciones, { color: colors.text }]}>OBSERVACIONES</Text>
+
+          <Divider style={styles.divider}/>
 
           <View style={styles.iconsContainer}>
             <View style={styles.iconWrapper}>
@@ -179,6 +178,7 @@ const styles = StyleSheet.create({
   iconsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    marginBottom: 3
   },
   iconWrapper: {
     flexDirection: 'column',
@@ -191,4 +191,8 @@ const styles = StyleSheet.create({
   uppercaseText: {
     textTransform: 'uppercase',
   },
+  divider: {
+    marginTop:10,
+    marginBottom: 10
+  }
 });

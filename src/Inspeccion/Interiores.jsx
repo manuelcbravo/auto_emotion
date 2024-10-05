@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { View, StyleSheet, Text, TouchableOpacity, Image, ActivityIndicator, Platform } from 'react-native';
-import { Appbar, Card, TextInput, Button, useTheme } from 'react-native-paper';
+import { View, StyleSheet, Text, TouchableOpacity, Image, ActivityIndicator, Platform, KeyboardAvoidingView, ScrollView } from 'react-native';
+import { Appbar, Card, TextInput, Button, useTheme, Text as TextPaper } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons'; // Importa el ícono de cámara
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import CamaraPrincipalComponent from '../../components/CamaraPrincipalComponent';
@@ -203,11 +203,14 @@ export default function InteriorTapiceriaScreen({ navigation, route }) {
                 <Appbar.BackAction onPress={() => navigation.goBack()} />
                 <Appbar.Content title={ texto_titulos[step-1] } />
             </Appbar.Header>
-            <View style={styles.content}>
-                <Card style={styles.card}>
-                <Card.Title title="Estado y Costos" />
-                <Card.Content>
-                  <View style={styles.selectorsContainer }>
+            <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={styles.content}>
+              <ScrollView contentContainerStyle={styles.scrollView} nestedScrollEnabled={true}>
+              
+                <TextPaper variant="titleMedium" style={{ fontWeight: 400, marginBottom: 10 }}>
+                  Estado y Costos
+                </TextPaper>
+                
+                <View style={styles.selectorsContainer }>
                   <CustomSelect
                     open={openPuerta}
                     setOpen={setOpenPuerta}
@@ -216,50 +219,49 @@ export default function InteriorTapiceriaScreen({ navigation, route }) {
                     onChangeValue={(value) => handleChangeNested(`${valor_texto}.id_estado`, value)}
                     placeholder="Estado del artículo"
                   />
-                  </View>
-                  <InputComponent
-                    placeholder="Observaciones"
-                    value={values[valor_texto]?.observaciones} // Asegúrate de usar el valor del estado actualizado
-                    onChangeText={(text) => handleChangeNested(`${valor_texto}.observaciones`, text)}
-                  />
-                  <InputComponent
-                    placeholder="Costo Previsto"
-                    value={values[valor_texto]?.costo_previsto} // Asegúrate de usar el valor del estado actualizado
-                    onChangeText={(text) => handleChangeNested(`${valor_texto}.costo_previsto`, text)}
-                    keyboardType="numeric"
-                  />
-                </Card.Content>
-                </Card>
-                <Card style={styles.card}>
-                <Card.Title title="Fotos" />
-                <Card.Content style={styles.photoCardContent}>
-                  {values[valor_texto] && values[valor_texto].fotos && values[valor_texto].fotos.length > 0 ? (
-                    <View style={styles.container_photo}>
-                      {values[valor_texto].fotos.map((imgSrc, index) => (
-                        <TouchableOpacity key={index} onPress={() => console.log("Foto presionada", imgSrc)}>
-                          <Image source={{ uri: imgSrc.uri }} style={styles.image} />
-                        </TouchableOpacity>
-                      ))}
-                    </View>
-                  ) : (
-                    <Text style={styles.photoText}>No hay foto</Text>
-                  )}
-                </Card.Content>
-                <View>
-                    <Button
-                    mode="contained"
-                    onPress={handleAddPhoto}
-                    style={[styles.fullButton, { backgroundColor: colors.primary}]}
-                    icon={({ size, color }) => (
-                        <Icon name="camera" size={size} color={color} />
-                    )}
-                    >
-                    Tomar Foto
-                    </Button>
                 </View>
+                <InputComponent
+                  placeholder="Observaciones"
+                  value={values[valor_texto]?.observaciones} // Asegúrate de usar el valor del estado actualizado
+                  onChangeText={(text) => handleChangeNested(`${valor_texto}.observaciones`, text)}
+                />
+                <InputComponent
+                  placeholder="Costo Previsto"
+                  value={values[valor_texto]?.costo_previsto} // Asegúrate de usar el valor del estado actualizado
+                  onChangeText={(text) => handleChangeNested(`${valor_texto}.costo_previsto`, text)}
+                  keyboardType="numeric"
+                />
                 
+                <Card style={styles.card}>
+                  <Card.Title title="Fotos" />
+                  <Card.Content style={styles.photoCardContent}>
+                    {values[valor_texto] && values[valor_texto].fotos && values[valor_texto].fotos.length > 0 ? (
+                      <View style={styles.container_photo}>
+                        {values[valor_texto].fotos.map((imgSrc, index) => (
+                          <TouchableOpacity key={index} onPress={() => console.log("Foto presionada", imgSrc)}>
+                            <Image source={{ uri: imgSrc.uri }} style={styles.image} />
+                          </TouchableOpacity>
+                        ))}
+                      </View>
+                    ) : (
+                      <Text style={styles.photoText}>No hay foto</Text>
+                    )}
+                  </Card.Content>
+                  <View>
+                      <Button
+                      mode="contained"
+                      onPress={handleAddPhoto}
+                      style={[styles.fullButton, { backgroundColor: colors.primary}]}
+                      icon={({ size, color }) => (
+                          <Icon name="camera" size={size} color={color} />
+                      )}
+                      >
+                      Tomar Foto
+                      </Button>
+                  </View>
                 </Card>
-            </View>
+              </ScrollView>
+            </KeyboardAvoidingView>
             <View style={[styles.buttonContainer, { backgroundColor: colors.primary}]}>
               <TouchableOpacity onPress={handleSave} style={styles.button} color={theme.colors.buttonPaso}>
                 <Text style={styles.buttonText}>Guardar y avanzar</Text>
@@ -384,5 +386,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between', // Esto añade espacio entre las imágenes
+  },
+  scrollView: {
+    padding: 15,
+  },
+  content: {
+    flex: 1
   },
 });

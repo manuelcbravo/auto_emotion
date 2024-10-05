@@ -2,6 +2,7 @@ import React from 'react';
 import { View, StyleSheet, Text } from 'react-native';
 import { TextInput as Input, IconButton } from 'react-native-paper';
 import { theme } from '../../core/theme';
+import { Feather } from '@expo/vector-icons';
 
 export default function PasswordTextInput({ errorText, description, value, onChangeText, ...props }) {
   const [secureTextEntry, setSecureTextEntry] = React.useState(true);
@@ -29,14 +30,21 @@ export default function PasswordTextInput({ errorText, description, value, onCha
         onChangeText={handleChangeText}
         secureTextEntry={secureTextEntry}
         autoCapitalize="none"
+        left={
+          <Input.Icon
+            icon={() => (
+              <Feather name="key" size={20} color={theme.colors.gris} />
+            )}
+          />
+        }
         theme={{
-          roundness: 20,
+          roundness: 15,
         }}
         {...props}
       />
       <IconButton
         icon={secureTextEntry ? 'eye-off' : 'eye'}
-        color={theme.colors.primary}
+        iconColor={theme.colors.gris}   
         size={20}
         onPress={toggleSecureEntry}
         style={styles.toggleButton}

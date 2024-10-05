@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect  } from 'react';
-import { Card, Text, Avatar, Button, useTheme } from 'react-native-paper';
+import { Card, Text, Avatar, Button, useTheme, Divider  } from 'react-native-paper';
 import { StyleSheet, View,TouchableOpacity, Platform  } from 'react-native';
 import { FontAwesome5, AntDesign, MaterialCommunityIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -113,7 +113,7 @@ export default function CustomCard({ onPress, card, route }) {
         source={{ uri: route + 'api/archivos/' + obtenerFoto(card) }} 
         style={styles.image}
       />
-      <Card.Content>
+      <Card.Content style={{ paddingBottom: 0}}>
         <View style={styles.header}>
           <Text style={styles.headerText}>{ buscarEnOpciones(card.id_marca, opcionesMarca)  + ' ' + buscarEnOpciones(card.id_modelo, opcionesModelo)  } </Text>
           <Text style={[styles.date, { color: colors.text }]}>18/02/2019</Text>
@@ -121,40 +121,39 @@ export default function CustomCard({ onPress, card, route }) {
         <Text style={styles.cardSubTitle}>
           { card.version ?? '-' }
         </Text>
-        <View style={{ backgroundColor: colors.primary, alignSelf: 'flex-start', padding: 2, borderRadius: 5 }}>
+        <View style={{ backgroundColor: colors.primary, alignSelf: 'flex-start', padding: 0, borderRadius: 5 }}>
           <Text style={[styles.cardTitle, { color: colors.textWhite, fontSize: colors.fonSizeCard }]}>
             {card.placa ?? 'AAA000'}
           </Text>
         </View>
         <Text style={[styles.uppercaseText, { color: colors.text }]}>VENDEDOR: {card.valuador}</Text>
         <Text style={[styles.uppercaseText, { color: colors.text, fontSize: 12 }]}>CLIENTE: {card.cliente}</Text>
-        <Text style={{ color: colors.text, fontSize: 12  }}>TIENDA: DISTRIBUIDORA VOLKSWAGEN DE PACHUCA, S.A.</Text>
         
-        <Text style={[styles.observaciones, { color: colors.text }]}>OBSERVACIONES</Text>
+        <Divider style={styles.divider}/>
 
         <View style={styles.iconsContainer}>
           <View style={styles.iconWrapper}>
-            <FontAwesome5 name="calendar-alt" size={16} color={colors.text} />
+            <FontAwesome5 name="calendar-alt" size={14} color={colors.text} />
             <Text style={{ color: colors.text, fontSize: colors.fonSizeCard}}>{buscarEnOpciones(card.id_anio, opcionesAnioLanzamiento)}</Text>
           </View>
           <View style={styles.iconWrapper}>
-            <AntDesign name="dashboard" size={16} color={colors.text} />
+            <AntDesign name="dashboard" size={14} color={colors.text} />
             <Text style={{ color: colors.text, fontSize: colors.fonSizeCard }}>{ card.kilometraje ?? '-'}</Text>
           </View>
           <View style={styles.iconWrapper}>
-            <FontAwesome5 name="paint-brush" size={16} color={colors.text} />
+            <FontAwesome5 name="paint-brush" size={14} color={colors.text} />
             <Text style={{ color: colors.text, fontSize: colors.fonSizeCard }}>{buscarEnOpciones(card.id_color, opcionesColor)}</Text>
           </View>
           <View style={styles.iconWrapper}>
-            <MaterialCommunityIcons name="car-shift-pattern" size={16} color={colors.text} />
+            <MaterialCommunityIcons name="car-shift-pattern" size={14} color={colors.text} />
             <Text style={{ color: colors.text, fontSize: colors.fonSizeCard }}>{buscarEnOpciones(card.id_transmision, opcionesTransmision)}</Text>
           </View>
           <View style={styles.iconWrapper}>
-            <MaterialCommunityIcons name="car-door" size={16} color={colors.text} />
+            <MaterialCommunityIcons name="car-door" size={14} color={colors.text} />
             <Text style={{ color: colors.text, fontSize: colors.fonSizeCard }}>{card.id_cantidad_puertas ?? '-'}</Text>
           </View>
           <View style={styles.iconWrapper}>
-            <FontAwesome5 name="gas-pump" size={16} color={colors.text} />
+            <FontAwesome5 name="gas-pump" size={14} color={colors.text} />
             <Text style={{ color: colors.text, fontSize: colors.fonSizeCard }}>{buscarEnOpciones(card.id_combustible, opcionesCombustible)}</Text>
           </View>
         </View>
@@ -194,6 +193,7 @@ const styles = StyleSheet.create({
   iconsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    marginBottom: 3
   },
   iconWrapper: {
     flexDirection: 'column',
@@ -218,4 +218,8 @@ const styles = StyleSheet.create({
   cardSubTitle: {
     fontSize: 14
   },
+  divider: {
+    marginTop:10,
+    marginBottom: 10
+  }
 });

@@ -5,6 +5,7 @@ import { theme } from '../../core/theme'
 import useForm from '../../components/Form/useForm'; // Importa tu hook useForm
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
+import Wizard from '../../components/Form/Wizard';
 
 export default function Paso3({ navigation, route }) {
   const { id, step } = route.params;
@@ -15,6 +16,7 @@ export default function Paso3({ navigation, route }) {
   const [parsedSession, setParsedSession] = useState({});
   const { colors } = useTheme();
   const evaluacion = (session, evalId) => session.find(item => item.id === evalId);
+  const [currentStep, setCurrentStep] = useState(3);
 
   const fetchData = useCallback(async () => {
     try {
@@ -90,6 +92,7 @@ export default function Paso3({ navigation, route }) {
         <Appbar.Content title="Inspección" />
       </Appbar.Header>
       <View style={styles.content}>
+        <Wizard currentStep={currentStep} />
         <Card style={styles.card} onPress={() => navigation.navigate('Interiores', { id, step: 1 })}>
           <View style={styles.row}>
             <View style={styles.col1}>

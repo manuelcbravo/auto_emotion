@@ -2,6 +2,7 @@ import React from 'react'
 import { View, StyleSheet, Text } from 'react-native'
 import { TextInput as Input } from 'react-native-paper'
 import { theme } from '../../core/theme'
+import { Feather } from '@expo/vector-icons';
 
 export default function TextInput({ errorText, description, ...props }) {
   return (
@@ -11,8 +12,15 @@ export default function TextInput({ errorText, description, ...props }) {
         selectionColor={theme.colors.primary}
         underlineColor="transparent"
         mode="outlined"
+        left={
+          <Input.Icon
+            icon={() => (
+              <Feather name="mail" size={20} color={theme.colors.gris} />
+            )}
+          />
+        }
         theme={{
-          roundness: 20,
+          roundness: 15,
         }}
         {...props}
       />

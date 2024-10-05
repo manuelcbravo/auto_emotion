@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Platform, ScrollView, Alert, Image, Modal, ActivityIndicator, Text } from 'react-native';
+import { View, StyleSheet, Platform, ScrollView, Alert, Image, Modal, ActivityIndicator, Text, TouchableOpacity } from 'react-native';
 import { Appbar, Card, Title, Paragraph, useTheme, Button } from 'react-native-paper';
 import * as ImagePicker from 'expo-image-picker';
 import * as DocumentPicker from 'expo-document-picker';
@@ -10,6 +10,7 @@ import useForm from '../../components/Form/useForm';
 import { theme } from '../../core/theme';
 import { setEvaluacionArchivo } from '../../axiosConfig'; 
 import { MaterialIcons } from '@expo/vector-icons'; 
+import Entypo from '@expo/vector-icons/Entypo';
 
 const UploadScreen = ({ navigation, route }) => {
   const { tipoId, id, routes } = route.params; 
@@ -94,13 +95,30 @@ const UploadScreen = ({ navigation, route }) => {
       });
 
       if (!result.canceled) {
-        setFileUri(result.assets[0].uri);
-        handleChange('fileUri', result.assets[0].uri)
+        if(result.assets[0].size < 2550330){
+          setFileUri(result.assets[0].uri);
+          handleChange('name', result.assets[0].name)
+          handleChange('fileUri', result.assets[0].uri)
+        }else{
+          Alert.alert(
+            'Archivo demasiado grande', // Título del alerta
+            'El archivo seleccionado supera el tamaño máximo permitido de 2.5 MB.', // Mensaje
+            [{ text: 'OK' }] // Botón de acción
+          );
+        }
       }
     } catch (error) {
       console.error('Error seleccionando archivo: ', error);
     }
   };
+
+  const handleDelete = () => {
+    handleChange('fileUri', '')
+    handleChange('name', '')
+    setFileUri('')
+  }
+
+  console.log(values);
 
   const handleSubmit = async () => {
     // Validación antes de enviar los datos
@@ -151,31 +169,37 @@ const UploadScreen = ({ navigation, route }) => {
     <View style={styles.container}>
       <Appbar.Header style={styles.header}>
         <Appbar.BackAction onPress={() => navigation.goBack()} />
-        <Appbar.Content title="Archivos" />
+        <Appbar.Content title="Subir Documentos" />
       </Appbar.Header>
       <ScrollView contentContainerStyle={styles.content}>
-        <Card style={styles.card}>
-          <Card.Content>
-            <Title>Seleccionar Tipo de Archivo</Title>
-            <CustomSelect
-              open={openArchivo}
-              value={values.id_tipo_archivo}
-              items={tipoId === 1 ? clientes : vehiculos} // Corregir la lista de items
-              setOpen={setOpenArchivo}
-              onChangeValue={(value) => handleChange('id_tipo_archivo', value)}
-              placeholder="Tipo de archivo"
-            />
-            <Paragraph>Elija una opción para subir una imagen o archivo.</Paragraph>
+        <CustomSelect
+          open={openArchivo}
+          value={values.id_tipo_archivo}
+          items={tipoId === 1 ? clientes : vehiculos} // Corregir la lista de items
+          setOpen={setOpenArchivo}
+          onChangeValue={(value) => handleChange('id_tipo_archivo', value)}
+          placeholder="Tipo de archivo"
+        />
+        {!fileUri && (
+          <>
+            <Text style={styles.instructions}>
+              Tomar foto o sube un archivo
+            </Text>
+
+            <View style={styles.uploadBox}>
             <View style={styles.buttonContainer}>
               <Button icon="camera" 
                 onPress={pickImage} 
                 labelStyle={{ color: colors.textWhite }}
                 style={{ backgroundColor: colors.primary, color: colors.textWhite }}
-               >
+                >
                 Tomar Foto
               </Button>
-            </View>
-            <View style={styles.buttonContainer}>
+              <View style={styles.separatorContainer}>
+                <View style={styles.line} />
+                <Text style={styles.orText}>OR</Text>
+                <View style={styles.line} />
+              </View>
               <Button icon="folder" 
                 onPress={pickDocument}
                 labelStyle={{ color: colors.textWhite }}
@@ -183,20 +207,38 @@ const UploadScreen = ({ navigation, route }) => {
                 Seleccionar Archivo
               </Button>
             </View>
-          </Card.Content>
-        </Card>
+            <Text style={styles.supportedFiles}>
+              Tamaño maximo de 2.5 mb
+            </Text>
+          </View> 
+          </>
+          )}
 
         {fileUri && (
-          <Card style={styles.card}>
-            <Card.Content>
-              <Title>Archivo Seleccionado</Title>
+          <View style={styles.card}>
+           
               {fileUri.endsWith('.jpg') || fileUri.endsWith('.png') || fileUri.endsWith('.jpeg') ? (
                 <Image source={{ uri: fileUri }} style={styles.image} />
               ) : (
-                <MaterialIcons name="attach-file" size={40} color={colors.primary} />
+                <>
+                <Entypo name="folder" size={80} color={colors.primary} />
+                  <Text style={styles.supportedFiles}>
+                    { values.name}
+                  </Text>
+                </>
               )}
-            </Card.Content>
-          </Card>
+          </View>
+        )}
+
+        {fileUri && (
+          <View style={styles.BorrarButtonContainer}>
+            <Button icon="delete" 
+              onPress={handleDelete}  
+              labelStyle={{ color: colors.textWhite }}
+              style={[styles.button, { backgroundColor: colors.danger, color: colors.textWhite }]}>
+              Borrar
+            </Button>
+          </View>
         )}
 
         <View style={styles.submitButtonContainer}>
@@ -235,7 +277,8 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   card: {
-    marginBottom: 20,
+    marginTop: 30,
+    alignItems: 'center', // Centrar los textos en las columnas
   },
   header: {
     height: theme.colors.tamanoAppBar,
@@ -243,8 +286,11 @@ const styles = StyleSheet.create({
   buttonContainer: {
     marginVertical: 10, 
   },
-  submitButtonContainer: {
+  BorrarButtonContainer: {
     marginTop: 20,
+  },
+  submitButtonContainer: {
+    marginTop: 10,
     marginBottom: 50,
   },
   image: {
@@ -271,6 +317,58 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: 'center',
   },
+  containerDetail: {
+    padding: 10, 
+  },
+
+  instructions: {
+    fontSize: 14,
+    marginBottom: 10,
+    marginTop: 20
+  },
+  uploadBox: {
+    borderWidth: 2,
+    borderColor: '#ccc',
+    borderStyle: 'dashed',
+    alignItems: 'center',
+    padding: 20,
+    marginBottom: 20,
+  },
+  uploadText: {
+    fontSize: 16,
+    marginBottom: 10,
+  },
+  separatorContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginVertical: 16, // Espacio arriba y abajo del separador
+  },
+  line: {
+    flex: 1,
+    height: 1,
+    backgroundColor: '#d3d3d3', // Color gris claro
+    marginHorizontal: 10, // Espacio entre la línea y el texto
+  },
+  orText: {
+    color: 'gray',
+    fontWeight: 'bold',
+  },
+  browseButton: {
+    backgroundColor: '#007bff',
+    padding: 10,
+    borderRadius: 5,
+  },
+  browseButtonText: {
+    color: '#fff',
+    fontSize: 16,
+  },
+  supportedFiles: {
+    fontSize: 12,
+    marginBottom: 20,
+    color: 'gray',
+  },
+ 
 });
 
 export default UploadScreen;

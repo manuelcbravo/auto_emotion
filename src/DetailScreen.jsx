@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { ScrollView, StyleSheet, View, Text, KeyboardAvoidingView, Platform, ActivityIndicator, TouchableOpacity, Modal, Image } from 'react-native';
-import { Appbar, Card, Title, Paragraph, Button, useTheme } from 'react-native-paper';
-import { MaterialIcons } from '@expo/vector-icons'; // Importamos los íconos
+import { ScrollView, StyleSheet, View, Text, KeyboardAvoidingView, Platform, ActivityIndicator, TouchableOpacity, Modal, Image, FlatList, SectionList } from 'react-native';
+import { Appbar, Card, Title, Paragraph, Button, useTheme, Text as TextPaper, Chip } from 'react-native-paper';
+import { MaterialIcons, Entypo, Ionicons } from '@expo/vector-icons'; // Importamos los íconos
 import { theme } from '../core/theme';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import useForm from '../components/Form/useForm'; // Importa tu hook useForm
@@ -133,13 +133,15 @@ const DetailScreen = ({ navigation, route }) => {
             setParsedSession(parsedSessionObj);
 
             const data_evaluation = evaluacion(parsedSessionObj.datos_api, id);
-            setArchivosClientes(Array.isArray(values.archivos_clientes) ? values.archivos_clientes : JSON.parse(values.archivos_clientes || '[]'));
-            setArchivosVehiculos(Array.isArray(values.archivos_vehiculos) ? values.archivos_vehiculos : JSON.parse(values.archivos_vehiculos || '[]'));
+            
 
             if (data_evaluation) {
               setValues({
                   ...data_evaluation,
               });
+
+              setArchivosClientes(Array.isArray(data_evaluation.archivos_clientes) ? data_evaluation.archivos_clientes : JSON.parse(data_evaluation.archivos_clientes || '[]'));
+              setArchivosVehiculos(Array.isArray(data_evaluation.archivos_vehiculos) ? data_evaluation.archivos_vehiculos : JSON.parse(data_evaluation.archivos_vehiculos || '[]'));
             } else {
               setError(new Error('No se encontró la evaluación.'));
             }
@@ -183,70 +185,172 @@ const DetailScreen = ({ navigation, route }) => {
       );
   }
 
+
+  const ArchivoItem = ({ archivo }) => (
+    <TouchableOpacity style={[styles.itemContainer, { backgroundColor: 'white' }]} onPress={() => abrirModal(archivo.direccion)}>
+      <Entypo name="folder" size={50} color={colors.primary} />
+      <Text style={styles.nombre}>{archivo.nombre}</Text>
+    </TouchableOpacity>
+  );
+  
+  const renderGridItems = (items) => {
+    const numColumns = 3;
+
+    const rows = [];
+    for (let i = 0; i < items.length; i += numColumns) {
+      rows.push(items.slice(i, i + numColumns));
+    }
+
+    return rows.map((rowItems, rowIndex) => {    
+      return (
+        <View key={rowIndex} style={styles.row}>
+          {rowItems.map((item) => (
+            <ArchivoItem key={item.id} archivo={item} />
+          ))}
+    
+          {rowItems.length < numColumns &&
+            Array.from({ length: numColumns - rowItems.length }).map((_, emptyIndex) => (
+              <View key={`empty-${rowIndex}-${emptyIndex}`} style={[styles.itemContainer, { opacity: 0 }]} />
+            ))}
+        </View>
+      );
+    });
+  };
   
 
   return (
     <View style={styles.container}>
-      <Appbar.Header style={styles.header}>
-        <Appbar.BackAction onPress={() => navigation.goBack()} />
-        <Appbar.Content title="Detalles" />
-      </Appbar.Header>
+      <ScrollView contentContainerStyle={styles.scrollView} nestedScrollEnabled={true}>
+        <View style={styles.imageContainer}>
+          <Image source={{ uri: routes + 'api/archivos/' + obtenerFoto(values) }} style={styles.image} />
+          <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+            <Ionicons name="arrow-back" size={24} color="black" />
+          </TouchableOpacity>
+        </View>
+        <View style={styles.containerDetail}>
+          <TextPaper variant="titleLarge" style={{ fontWeight: 600 }}>
+            {buscarEnOpciones(values.id_marca, opcionesMarca)} {buscarEnOpciones(values.id_modelo, opcionesModelo)}
+          </TextPaper>
+          <TextPaper variant="titleMedium" style={{ fontWeight: 400, marginBottom: 20 }}>
+            { values.version ?? '-'}
+          </TextPaper>
 
-      <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={styles.content}>
-        <ScrollView contentContainerStyle={styles.scrollView} nestedScrollEnabled={true}>
+          <View style={styles.detailsContainer}>
+            <View style={styles.detailColumn}>
+              <TextPaper style={styles.label}>Año</TextPaper>
+              <TextPaper style={styles.value}>{buscarEnOpciones(values.id_anio, opcionesAnioLanzamiento)}</TextPaper>
+
+              <TextPaper style={styles.label}>Combustible</TextPaper>
+              <TextPaper style={styles.value}>{buscarEnOpciones(values.id_combustible, opcionesCombustible)}</TextPaper>
+
+              <TextPaper style={styles.label}>Placas</TextPaper>
+              <TextPaper style={styles.value}>{values.placa ?? '-'}</TextPaper>
+            </View>
+
+            <View style={styles.detailColumn}>
+              <TextPaper style={styles.label}>Color</TextPaper>
+              <TextPaper style={styles.value}>{buscarEnOpciones(values.id_color, opcionesColor)}</TextPaper>
+
+              <TextPaper style={styles.label}>Puertas</TextPaper>
+              <TextPaper style={styles.value}>{values.id_cantidad_puertas ?? '-'}</TextPaper>
+
+              <TextPaper style={styles.label}>Precio compra</TextPaper>
+              <TextPaper style={styles.value2}>${values.valor_compra ?? '4500000.00'}</TextPaper>
+            </View>
+
+            <View style={styles.detailColumn}>
+              <TextPaper style={styles.label}>Kilometraje</TextPaper>
+              <TextPaper style={styles.value}>{values.kilometraje ?? '-'} km</TextPaper>
+
+              <TextPaper style={styles.label}>Transmisión</TextPaper>
+              <TextPaper style={styles.value}>{buscarEnOpciones(values.id_transmision, opcionesTransmision)}</TextPaper>
+
+              <TextPaper style={styles.label}>Precio venta</TextPaper>
+              <TextPaper style={styles.value2}>${values.valor_venta ?? '4500000.00'}</TextPaper>
+            </View>
+          </View>
+          <View style={styles.detail2Column}>
+            <TextPaper style={styles.label}>V.I.N.</TextPaper>
+            <TextPaper style={styles.value}>{values.vin ?? '-'}</TextPaper>
+          </View>
+          <View style={styles.detail2Column}>
+            <TextPaper style={styles.label}>Asesor</TextPaper>
+            <TextPaper style={styles.value}>{values.valuador}</TextPaper>
+          </View>
+        </View>
+
+        <View style={styles.containerHeader}>
+          <View style={styles.detailsContainer}>
+            <TextPaper variant="titleMedium" style={{ fontWeight: 400}}>
+              Archivos Cliente
+            </TextPaper>
+            <Chip icon={() => (
+                      <MaterialIcons name="add" size={11} color="white" />
+                  )} 
+                  onPress={() => handleCardPress(1)} 
+                  style={{
+                    backgroundColor: colors.secondary,
+                    height: 32,
+                    borderRadius: 15,
+                  }}
+                  selectedColor={colors.textWhite}
+                  textStyle={{
+                    fontSize: 11,  // Tamaño más pequeño de la letra
+                    color: colors.textWhite,
+                  }}
+                  >
+                    Agregar
+            </Chip>
+          </View>
+        </View>
+        
+        { archivosClientes && archivosClientes.length > 0 ? (
+          renderGridItems(archivosClientes)
+        ) : (
           <Card style={{ margin: 10 }}>
-            <Card.Cover source={{ uri:  routes + 'api/archivos/' + obtenerFoto(values) }} />
             <Card.Content>
-              <Title>{values.cliente}</Title>
-              <Paragraph>Marca: {buscarEnOpciones(values.id_marca, opcionesMarca)}</Paragraph>
-              <Paragraph>Modelo: {buscarEnOpciones(values.id_modelo, opcionesModelo)}</Paragraph>
-              <Paragraph>Versión: { values.version ?? '-'}</Paragraph>
-              <Paragraph>Año: {buscarEnOpciones(values.id_anio, opcionesAnioLanzamiento)}</Paragraph>
-              <Paragraph>Cliente: {values.cliente}</Paragraph>
-              <Paragraph>Kilometraje: {values.kilometraje} km</Paragraph>
-              <Paragraph>Placa: {values.placa}</Paragraph>
-              <Paragraph>V.I.N.: {values.vin}</Paragraph>
-              <Paragraph>Vendedor: {values.valuador}</Paragraph>
+              <Paragraph>No hay archivos disponibles.</Paragraph>
             </Card.Content>
           </Card>
+        )}
+          
 
-          {/* Archivos Cliente */}
-          <Card style={{ margin: 10 }} onPress={() => handleCardPress(1)}>
+        <View style={[styles.containerHeader, {marginTop: 20}]}>
+          <View style={styles.detailsContainer}>
+            <TextPaper variant="titleMedium" style={{ fontWeight: 400}}>
+              Archivos Vehículos
+            </TextPaper>
+            <Chip icon={() => (
+                      <MaterialIcons name="add" size={11} color="white" />
+                  )} 
+                  onPress={() => handleCardPress(2)} 
+                  style={{
+                    backgroundColor: colors.secondary,
+                    height: 32,
+                    borderRadius: 15,
+                  }}
+                  selectedColor={colors.textWhite}
+                  textStyle={{
+                    fontSize: 11,  // Tamaño más pequeño de la letra
+                    color: colors.textWhite,
+                  }}
+                  >
+                    Agregar
+            </Chip>
+          </View>
+        </View>
+        
+        { archivosVehiculos && archivosVehiculos.length > 0 ? (
+          renderGridItems(archivosVehiculos)
+        ) : (
+          <Card style={{ margin: 10 }}>
             <Card.Content>
-              <Title>Archivos Cliente</Title>
-              { archivosClientes && archivosClientes.length > 0 ? (
-                archivosClientes.map((archivo, index) => (
-                  <TouchableOpacity key={index} onPress={() => abrirModal(archivo.direccion)} style={styles.archivoItem}>
-                    <View style={styles.archivoContainer}>
-                      <MaterialIcons name="insert-drive-file" size={50} color={colors.primary} />
-                      <Paragraph style={styles.archivoNombre}>{archivo.nombre}</Paragraph>
-                    </View>
-                  </TouchableOpacity>
-                ))
-              ) : (
-                <Paragraph>No hay archivos disponibles, da click para subir los archivos.</Paragraph>
-              )}
+              <Paragraph>No hay archivos disponibles.</Paragraph>
             </Card.Content>
           </Card>
-          <Card style={{ margin: 10 }} onPress={() => handleCardPress(2)}>
-            <Card.Content>
-              <Title>Archivos Vehículos</Title>
-              { archivosVehiculos && archivosVehiculos.length > 0 ? (
-                archivosVehiculos.map((archivo, index) => (
-                  <TouchableOpacity key={index} onPress={() => abrirModal(archivo.direccion)} style={styles.archivoItem}>
-                    <View style={styles.archivoContainer}>
-                      <MaterialIcons name="insert-drive-file" size={50} color={colors.primary} />
-                      <Paragraph style={styles.archivoNombre}>{archivo.nombre}</Paragraph>
-                    </View>
-                  </TouchableOpacity>
-                ))
-              ) : (
-                <Paragraph>No hay archivos disponibles, da click para subir los archivos.</Paragraph>
-              )}
-          </Card.Content>
-          </Card>
-        </ScrollView>
-      </KeyboardAvoidingView>
+        )}
+        
+      </ScrollView>
 
       {/* Modal para previsualizar archivos */}
       <Modal visible={modalVisible} transparent={true} onRequestClose={() => setModalVisible(false)}>
@@ -304,28 +408,102 @@ const styles = StyleSheet.create({
   },
   image: {
     width: '100%',
-    height: 200,
-    resizeMode: 'contain',
-    marginVertical: 10,
+    height: 250,
+    resizeMode: 'cover',
   },
   archivosGrid: {
-    flexDirection: 'row', // Asegura que los elementos se posicionen en fila
-    flexWrap: 'wrap', // Permite que los elementos bajen a la siguiente línea si no caben en la fila
-    justifyContent: 'space-between', // Distribuye el espacio entre los elementos
+    flexDirection: 'row', 
+    flexWrap: 'wrap', 
+    justifyContent: 'space-between', 
   },
   archivoItem: {
-    width: '22%', // Aproximadamente 22% del ancho para permitir 4 ítems en la fila
-    marginBottom: 15, // Espacio vertical entre las filas
-    alignItems: 'center', // Centra el ícono y el texto horizontalmente
-    marginHorizontal: '1%', // Espacio horizontal entre ítems
+    width: '22%',
+    marginBottom: 15, 
+    alignItems: 'center', 
+    marginHorizontal: '1%', 
   },
   archivoContainer: {
-    alignItems: 'center', // Centra el contenido dentro de cada ítem
+    alignItems: 'center', 
   },
   archivoNombre: {
-    marginTop: 5, // Espacio entre el ícono y el nombre
-    textAlign: 'center', // Centra el texto debajo del ícono
-    fontSize: 12, // Tamaño pequeño para el texto
+    marginTop: 5, 
+    textAlign: 'center', 
+    fontSize: 12, 
+  },
+  backButton: {
+    position: 'absolute',
+    top: 30,
+    left: 10,
+    backgroundColor: 'white',
+    borderRadius: 50,
+    padding: 8,
+    alignItems: 'center', 
+  },
+  imageContainer: {
+    position: 'relative', 
+    width: '100%', 
+    height: 250, 
+    backgroundColor: '#ccc', 
+  },
+
+  containerDetail: {
+    padding: 16, 
+  },
+  containerHeader: {
+    paddingLeft: 10, 
+    paddingRight: 10, 
+  },
+  detailsContainer: {
+    flexDirection: 'row', // Columnas
+    justifyContent: 'space-between',
+  },
+  detailColumn: {
+    flex: 1,
+    alignItems: 'left', // Centrar los textos en las columnas
+  },
+  detail2Column: {
+    flex: 1,
+  },
+  label: {
+    fontSize: 12,
+    color: 'gray',
+  },
+  value: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#000',
+    marginBottom: 8, // Espacio entre los pares label/valor
+  },
+  value2: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#009040',
+    marginBottom: 8, // Espacio entre los pares label/valor
+  },
+  gridContainer: {
+    padding: 16,
+  },
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between', // Espacio entre los elementos
+  },
+  itemContainer: {
+    flex: 1,
+    margin: 8,
+    padding: 16,
+    borderRadius: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: 100,
+  },
+  icon: {
+    width: 50,
+    height: 50,
+    marginBottom: 8,
+  },
+  nombre: {
+    color: '#000',
+    fontWeight: 'bold',
   },
 });
 

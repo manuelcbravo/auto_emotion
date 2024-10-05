@@ -4,8 +4,8 @@ import { Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const axiosInstance = axios.create({
-  // baseURL: 'https://brief-centrally-unicorn.ngrok-free.app/auto_motion_laravel/public/api',
-  baseURL: 'https://automotion.fielgroup.com.mx/api',
+  baseURL: 'https://brief-centrally-unicorn.ngrok-free.app/auto_motion_laravel/public/api',
+  // baseURL: 'https://automotion.fielgroup.com.mx/api',
   headers: { 
     'Accept': 'application/json',
     'Content-Type': 'application/json',

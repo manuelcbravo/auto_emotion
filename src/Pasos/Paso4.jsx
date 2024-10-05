@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, Button, KeyboardAvoidingView, Platform, TouchableOpacity, Modal, ActivityIndicator, Alert } from 'react-native';
-import { Appbar, Card, useTheme } from 'react-native-paper';
+import { Appbar, Card, useTheme, Text as TextPaper  } from 'react-native-paper';
 import InputComponent from '../../components/Form/InputComponent';
 import TextAreaComponent from '../../components/Form/TextAreaComponent';
 import { theme } from '../../core/theme'
 import { setEvaluacionGuardarFoto, setEvaluacionGuardar } from '../../axiosConfig'; 
+import Wizard from '../../components/Form/Wizard';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import useForm from '../../components/Form/useForm'; // Importa tu hook useForm
@@ -26,6 +27,7 @@ export default function Paso4({ navigation, route }) {
   const [photosTotal, setPhotosTotal] = useState([]);
   const [gastos, setGastos] = useState(0);
   const { colors } = useTheme();
+  const [currentStep, setCurrentStep] = useState(4);
 
   const formatoDinero = (cantidad) => {
     const numero = Number(cantidad);
@@ -58,6 +60,8 @@ export default function Paso4({ navigation, route }) {
           
           const data_evaluation = evaluacion(parsedSessionObj.datos_api, id);
           const data_form = parsedSessionObj.datos_formulario;
+
+          console.log(data_evaluation);
 
           setValues({
             ...data_evaluation,
@@ -250,25 +254,27 @@ export default function Paso4({ navigation, route }) {
       </Appbar.Header>
       <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={styles.content}>
         <ScrollView contentContainerStyle={styles.scrollViewContent}>
-          <Card style={styles.card}>
-            <Card.Title title="Clasificación y Propósito"/>
-            <Card.Content>
-              <CustomSelect
-                  open={openPuerta}
-                  setOpen={setOpenPuerta}
-                  value={values.id_estado_vehiculo} // Asegúrate de usar el valor del estado actualizado
-                  items={opcionesVarlor}
-                  onChangeValue={(value) => handleChange('id_estado_vehiculo', value)}
-                  placeholder="Clasificación"
-                />
-              <InputComponent
-                label="Propósito"
-                value={proposito}
-                onChangeText={setProposito}
-                placeholder="Ingrese el propósito"
-              />
-            </Card.Content>
-          </Card>
+        <Wizard currentStep={currentStep} />
+         
+        <TextPaper variant="titleMedium" style={{ fontWeight: 400, marginBottom: 10 }}>
+          Clasificación y Propósito
+        </TextPaper>
+
+          <CustomSelect
+              open={openPuerta}
+              setOpen={setOpenPuerta}
+              value={values.id_estado_vehiculo} // Asegúrate de usar el valor del estado actualizado
+              items={opcionesVarlor}
+              onChangeValue={(value) => handleChange('id_estado_vehiculo', value)}
+              placeholder="Clasificación"
+            />
+          <InputComponent
+            label="Propósito"
+            value={proposito}
+            onChangeText={setProposito}
+            placeholder="Ingrese el propósito"
+          />
+
           <Card style={styles.card}>
             <Card.Title title="Valores de Referencia"/>
             <Card.Content>
@@ -332,30 +338,30 @@ export default function Paso4({ navigation, route }) {
               </View>
             </Card.Content>
           </Card>
-         
-          <Card style={styles.card}>
-            <Card.Title title="Valores de Compra"/>
-            <Card.Content>
-              <InputComponent
-                value={values.valor_compra}
-                onChangeText={(text) => handleChange('valor_compra', text)}
-                placeholder="Valor de compra"
-                keyboardType="numeric"
-              />
-              <InputComponent
-                label="Valor de Venta"
-                value={values.valor_venta}
-                onChangeText={(text) => handleChange('valor_venta', text)}
-                placeholder="Valor de venta"
-                keyboardType="numeric"
-              />
-              <TextAreaComponent 
-                label="Observaciones" 
-                value={values.observacion_primer_comentario}                
-                onChangeText={(text) => handleChange('observacion_primer_comentario', text)}
-              />
-            </Card.Content>
-          </Card>
+          <TextPaper variant="titleMedium" style={{ fontWeight: 400, marginBottom: 10 }}>
+          Valores de Compra
+          </TextPaper>
+          <InputComponent
+            value={values.valor_compra}
+            onChangeText={(text) => handleChange('valor_compra', text)}
+            placeholder="Valor de compra"
+            keyboardType="numeric"
+            required={true}
+          />
+          <InputComponent
+            label="Valor de Venta"
+            value={values.valor_venta}
+            onChangeText={(text) => handleChange('valor_venta', text)}
+            placeholder="Valor de venta"
+            keyboardType="numeric"
+            required={true}
+          />
+          <TextAreaComponent 
+            label="Observaciones" 
+            value={values.observacion_primer_comentario}                
+            onChangeText={(text) => handleChange('observacion_primer_comentario', text)}
+          />
+            
         </ScrollView>
       </KeyboardAvoidingView>  
       <View style={[styles.buttonContainer, { backgroundColor: colors.primary}]}>

@@ -35,7 +35,8 @@ export function ThemeProvider({ children }) {
       buttonPaso: '#38B40A',
       disabledBackground: '#E0E0E0',
       disabledText: '#A0A0A0',
-      fonSizeCard: 11
+      fonSizeCard: 11,
+      danger: '#d9534f'
     },
     myOwnProperty: true, // Añade propiedades personalizadas si lo necesitas
   };

@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 
 const CustomSelect = ({ open, value, items, setOpen, setValue, placeholder, onChangeValue }) => {
 
   return (
-    <View style={{ flex: 1 }}>
-      <Text style={{ marginBottom: 5}}>{placeholder}</Text>
+    <View style={styles.container}>
+      <Text style={styles.label}>{placeholder}</Text>
        <DropDownPicker
             open={open}
             value={value}
@@ -19,12 +19,29 @@ const CustomSelect = ({ open, value, items, setOpen, setValue, placeholder, onCh
             listMode={'MODAL'}
             modalTitle={placeholder}
             modalAnimationType="slide" 
-            style={{
-              zIndex: 1000, // Asegúrate de que el zIndex sea suficientemente alto
-            }}
+            style={[styles.input, { backgroundColor: 'white', zIndex: 1000, }]}
         />
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    marginBottom: 12, 
+    flex: 1
+  },
+  label: {
+    color: '#5d5d5d', 
+    fontSize: 14,
+    marginBottom: 5, 
+  },
+  input: {
+    height: 40, 
+    borderWidth: 1,
+    borderColor: '#dcdcdc', 
+    borderRadius: 5, 
+    paddingHorizontal: 10, 
+  },
+});
 
 export default CustomSelect;

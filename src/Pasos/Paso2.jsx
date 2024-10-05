@@ -4,6 +4,7 @@ import { Appbar, Card, useTheme } from 'react-native-paper';
 import { theme } from '../../core/theme';
 import useForm from '../../components/Form/useForm'; // Importa tu hook useForm
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Wizard from '../../components/Form/Wizard';
 
 export default function Paso2({ navigation, route }) {
   const { id, step } = route.params;
@@ -14,6 +15,7 @@ export default function Paso2({ navigation, route }) {
   const evaluacion = (session, evalId) => session.find(item => item.id === evalId);
   const [parsedSession, setParsedSession] = useState({});
   const { colors } = useTheme();
+  const [currentStep, setCurrentStep] = useState(2);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -139,6 +141,7 @@ export default function Paso2({ navigation, route }) {
         <Appbar.Content title="Complementos" />
       </Appbar.Header>
       <ScrollView style={styles.scrollView}>
+        <Wizard currentStep={currentStep} />
         <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={styles.content}>
           {renderCards()}
           <View style={styles.card_final}></View>

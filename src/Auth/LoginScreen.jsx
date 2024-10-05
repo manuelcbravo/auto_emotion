@@ -119,7 +119,7 @@ const styles = StyleSheet.create({
     borderRadius: 25,
   },
   bottomStrip: (colors) => ({
-    height: 25, // Franja delgada en la parte inferior
+    height: 22, // Franja delgada en la parte inferior
     backgroundColor: colors.secondary, // Fondo secundario
   }),
 });

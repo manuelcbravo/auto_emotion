@@ -64,8 +64,7 @@ export default function HomeScreen({ navigation }) {
           }
         }
   
-        // Si no hay coincidencia o no cumple las condiciones, mantiene el de sessionData.datos_api
-        return sessionCard;
+         return sessionCard;
       });
   
       // Agregamos los elementos de newCards que no existen en sessionData.datos_api
