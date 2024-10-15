@@ -61,8 +61,6 @@ export default function Paso4({ navigation, route }) {
           const data_evaluation = evaluacion(parsedSessionObj.datos_api, id);
           const data_form = parsedSessionObj.datos_formulario;
 
-          console.log(data_evaluation);
-
           setValues({
             ...data_evaluation,
               id_estatus_evaluacion: 3

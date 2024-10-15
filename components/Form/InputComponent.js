@@ -58,6 +58,14 @@ const styles = StyleSheet.create({
     borderColor: '#dcdcdc', 
     borderRadius: 5, 
     paddingHorizontal: 10, 
+    // Sombra para iOS
+    shadowColor: '#000', // Color de la sombra
+    shadowOffset: { width: 2, height: 2 }, // Sombra solo hacia la derecha y abajo
+    shadowOpacity: 0.1, // Opacidad suave para que sea tenue
+    shadowRadius: 4, // Suaviza los bordes de la sombra
+    
+    // Sombra para Android
+    elevation: 1, // Nivel de elevación bajo para una sombra suave en Android
   },
 });
 

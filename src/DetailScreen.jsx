@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ScrollView, StyleSheet, View, Text, KeyboardAvoidingView, Platform, ActivityIndicator, TouchableOpacity, Modal, Image, FlatList, SectionList } from 'react-native';
+import { ScrollView, StyleSheet, View, Text, KeyboardAvoidingView, Platform, ActivityIndicator, TouchableOpacity, Modal, Image, Share } from 'react-native';
 import { Appbar, Card, Title, Paragraph, Button, useTheme, Text as TextPaper, Chip } from 'react-native-paper';
 import { MaterialIcons, Entypo, Ionicons } from '@expo/vector-icons'; // Importamos los íconos
 import { theme } from '../core/theme';
@@ -11,6 +11,7 @@ const DetailScreen = ({ navigation, route }) => {
   const { values, handleChange, setValues } = useForm({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [routesShare, setRoutesShare] = useState(null);
   const [parsedSession, setParsedSession] = useState({});
   const [modalVisible, setModalVisible] = useState(false);
   const [modalContent, setModalContent] = useState(null);
@@ -49,6 +50,7 @@ const DetailScreen = ({ navigation, route }) => {
 
         if (session) {
           const parsedSessionObj = JSON.parse(session);
+          setRoutesShare(parsedSessionObj.route_share);
           const data_form = parsedSessionObj.datos_formulario;
 
           const opcionesPuertas = data_form.puertas.map((puerta) => ({
@@ -163,6 +165,26 @@ const DetailScreen = ({ navigation, route }) => {
     navigation.navigate('UploadScreen', { tipoId: tipo, id: id, routes: routes });
   };
 
+  const onShare = async () => {
+    try {
+      const result = await Share.share({
+        message: routesShare + '/' + id,
+      });
+      
+      if (result.action === Share.sharedAction) {
+        if (result.activityType) {
+          console.log('Compartido con actividad: ' + result.activityType);
+        } else {
+          console.log('Compartido');
+        }
+      } else if (result.action === Share.dismissedAction) {
+        console.log('Compartido cancelado');
+      }
+    } catch (error) {
+      console.log('Error compartiendo', error.message);
+    }
+  };
+
   if (loading) {
     return (
       <View style={styles.loading}>
@@ -226,6 +248,10 @@ const DetailScreen = ({ navigation, route }) => {
           <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
             <Ionicons name="arrow-back" size={24} color="black" />
           </TouchableOpacity>
+          
+          <TouchableOpacity style={styles.ShareButton} onPress={onShare}>
+            <Entypo name="share" size={24} color="black" />
+          </TouchableOpacity>
         </View>
         <View style={styles.containerDetail}>
           <TextPaper variant="titleLarge" style={{ fontWeight: 600 }}>
@@ -287,7 +313,7 @@ const DetailScreen = ({ navigation, route }) => {
             <Chip icon={() => (
                       <MaterialIcons name="add" size={11} color="white" />
                   )} 
-                  onPress={() => handleCardPress(1)} 
+                  onPress={() => handleCardPress(2)} 
                   style={{
                     backgroundColor: colors.secondary,
                     height: 32,
@@ -323,7 +349,7 @@ const DetailScreen = ({ navigation, route }) => {
             <Chip icon={() => (
                       <MaterialIcons name="add" size={11} color="white" />
                   )} 
-                  onPress={() => handleCardPress(2)} 
+                  onPress={() => handleCardPress(1)} 
                   style={{
                     backgroundColor: colors.secondary,
                     height: 32,
@@ -434,6 +460,15 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 30,
     left: 10,
+    backgroundColor: 'white',
+    borderRadius: 50,
+    padding: 8,
+    alignItems: 'center', 
+  },
+  ShareButton: {
+    position: 'absolute',
+    top: 30,
+    right: 10,  
     backgroundColor: 'white',
     borderRadius: 50,
     padding: 8,

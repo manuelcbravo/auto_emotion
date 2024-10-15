@@ -81,7 +81,7 @@ export default function Paso2({ navigation, route }) {
     { label: '¿Fumaban dentro del auto?', value: values.fumaban_auto, key: 'fumaban_auto' },
     { label: '¿Tiene el historial de servicio?', value: values.historial_servicio, key: 'historial_servicio' },
     { label: '¿Tiene manual de propietario?', value: values.manual_propietario, key: 'manual_propietario' },
-    { label: '¿Tuvo algun siniestro?', value: values.siniestro, key: 'siniestro' },
+    { label: '¿Tuvo algún siniestro?', value: values.siniestro, key: 'siniestro' },
     { label: '¿Tiene duplicado de llaves?', value: values.duplicado_llaves, key: 'duplicado_llaves' },
     { label: '¿Tiene factura de agencia?', value: values.factura, key: 'factura' },
     { label: '¿Tiene tenencias/impuesto pagado al año?', value: values.tenencia, key: 'tenencia' },

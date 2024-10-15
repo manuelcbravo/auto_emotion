@@ -189,8 +189,6 @@ export default function Paso1({ navigation, route }) {
           const nombre = parsedSessionObj.nombre;
           const id_valuador = parsedSessionObj.id;
           const id_empresa = parsedSessionObj.id_empresa;
-
-          console.log(parsedSessionObj);
           
           const data_form = parsedSessionObj.datos_formulario;
 
@@ -458,7 +456,8 @@ export default function Paso1({ navigation, route }) {
 
   const fotos_texto = [
     "Parte delantera",
-    "Vista de tres cuartos delantera",
+    "Vista de tres cuartos delantera derecha",
+    "Vista de tres cuartos delantera izquierda",
     "Vista de tres cuartos trasera",
     "Lado izquierdo",
     "Lado derecho",
@@ -676,7 +675,15 @@ export default function Paso1({ navigation, route }) {
                       borderWidth: 1,
                       borderColor: '#dcdcdc', 
                       borderRadius: 5, 
-                      paddingHorizontal: 10, 
+                      paddingHorizontal: 10,
+                      // Sombra para iOS
+                      shadowColor: '#000', // Color de la sombra
+                      shadowOffset: { width: 2, height: 2 }, // Sombra solo hacia la derecha y abajo
+                      shadowOpacity: 0.1, // Opacidad suave para que sea tenue
+                      shadowRadius: 5, // Suaviza los bordes de la sombra
+                      
+                      // Sombra para Android
+                      elevation: 1, // Nivel de elevación bajo para una sombra suave en Android
                     }}
                 />
             </View>
