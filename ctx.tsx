@@ -1,7 +1,8 @@
 import React from 'react';
 import { login } from './axiosConfig'; // Import the axios instance from axiosConfig.js
 import { useStorageState } from './useStorageState';
-import Toast from 'react-native-toast-message';
+// import Toast from 'react-native-toast-message';
+import { ALERT_TYPE, Dialog, Toast } from 'react-native-alert-notification';
 
 const AuthContext = React.createContext<{
   signIn: (email: string, password: string) => Promise<void>; // Modifica el tipo de signIn
@@ -40,18 +41,22 @@ export function SessionProvider(props: React.PropsWithChildren) {
     } catch (error) {      
       if (error.response && error.response.status == 401) {
         Toast.show({
-          type: 'error',
-          text1: error.response.data.errors,
+          type: ALERT_TYPE.DANGER, // Cambia el tipo a DANGER para indicar error
+          title: 'Error de autenticación',
+          textBody: 'Credenciales incorrectas, intente nuevamente.',
         });
       } else {
-        console.error('Error al iniciar sesión:', error);
+        Toast.show({
+          type: ALERT_TYPE.DANGER,
+          title: 'Error',
+          textBody: 'Hubo un problema con el servidor. Por favor intente más tarde.',
+        });
         throw error;
       }
     }
   };
 
   return (
-    <>
       <AuthContext.Provider
         value={{
           signIn,
@@ -63,7 +68,5 @@ export function SessionProvider(props: React.PropsWithChildren) {
         }}>
         {props.children}
       </AuthContext.Provider>
-      <Toast/>
-    </>
   );
 }

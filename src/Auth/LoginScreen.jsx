@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, Image } from 'react-native';
 import { useSession } from '../../ctx';
-import { useTheme, Text } from 'react-native-paper';
+import { useTheme, Text, HelperText } from 'react-native-paper';
 import Button from '../../components/Auth/Button';
 import TextInput from '../../components/Auth/TextInput';
 import TextInputPassword from '../../components/Auth/TextInputPassword';
@@ -17,19 +17,49 @@ export default function LoginScreen() {
     password: '',
   });
 
+  // Estado para almacenar los errores de validación
+  const [errors, setErrors] = useState({
+    email: false,
+    password: false,
+  });
+
   // Función para manejar el cambio en los inputs
   const handleInputChange = (key, value) => {
     setFormData({ ...formData, [key]: value });
+    if (value !== '') {
+      setErrors({ ...errors, [key]: false });
+    }
+  };
+
+  // Validación de los campos
+  const validateFields = () => {
+    let valid = true;
+    let newErrors = { email: false, password: false };
+
+    if (formData.email === '') {
+      newErrors.email = true;
+      valid = false;
+    }
+
+    if (formData.password === '') {
+      newErrors.password = true;
+      valid = false;
+    }
+
+    setErrors(newErrors);
+    return valid;
   };
 
   const handleSignIn = async () => {
-    setLoading(true);
-    try {
-      await signIn(formData.email, formData.password);
-    } catch (error) {
-      console.error('Error al iniciar sesión:', error);
-    } finally {
-      setLoading(false);
+    if (validateFields()) {
+      setLoading(true);
+      try {
+        await signIn(formData.email, formData.password);
+      } catch (error) {
+        console.error('Error al iniciar sesión:', error);
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
@@ -57,15 +87,23 @@ export default function LoginScreen() {
           autoCompleteType="email"
           textContentType="emailAddress"
           keyboardType="email-address"
+          error={errors.email} // Cambiar el borde del input a rojo
           style={styles.input}
         />
+        <HelperText type="error" visible={errors.email} style={styles.helperText}>
+          El correo electrónico es obligatorio.
+        </HelperText>
 
         <TextInputPassword
           label="Contraseña"
           value={formData.password}
           onChangeText={(password) => handleInputChange('password', password)}
+          error={errors.password} // Cambiar el borde del input a rojo
           style={styles.input}
         />
+        <HelperText type="error" visible={errors.password} style={[styles.helperText, {marginBottom: -10}]}>
+          La contraseña es obligatoria.
+        </HelperText>
 
         <Button
           loading={loading}
@@ -112,11 +150,17 @@ const styles = StyleSheet.create({
     marginBottom: 30,
     color: '#003A70', // Cambia este color si es necesario
   },
-
+  input: {
+    marginBottom: 5, // Reduce el espacio entre el input y el texto de ayuda
+  },
+  helperText: {
+    marginBottom: -15, // Controla el espacio entre el helper text y el siguiente input
+    marginTop: -22, // Reduce la separación adicional
+  },
   button: {
     backgroundColor: '#003A70', // Botón azul
-    paddingVertical: 10,
     borderRadius: 25,
+    marginTop: 100
   },
   bottomStrip: (colors) => ({
     height: 22, // Franja delgada en la parte inferior
